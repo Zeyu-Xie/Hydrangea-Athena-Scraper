@@ -1,0 +1,15 @@
+# === Basic Configuration ===
+# FolderID is the unique identifier of the folder/lecture you want to download from
+FolderID: "folder-id"
+DownloadPath: "download-path"
+
+# === Account and Login Configuration ===
+# True or False, if you choose False you need to login manually on the chromedriver
+AutoLogin: True
+# Your Stockholm University account Username and password
+Username: "username"
+Password: "password"
+
+# === Log Configuration ===
+CommandLineLog: True
+FileLog: True
