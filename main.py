@@ -1,5 +1,7 @@
 from datetime import datetime
+import humanize
 import os
+from pathlib import Path
 import sys
 import yaml
 from selenium import webdriver
@@ -137,34 +139,35 @@ def download(driver, path, url):
 
 if __name__ == "__main__":
 
+    print("Hydrangea Athena Downloader © 2024 by Acan. All rights reserved.")
+    if not os.path.exists(DownloadPath):
+        os.makedirs(DownloadPath, exist_ok=True)
+        print_log("Download Path Created")
     prefs = {
         "download.prompt_for_download": False,
         "download.directory_upgrade": True,
         "safebrowsing.enabled": True
     }
+    print_log("Chrome Options Set")
     options = Options()
     options.add_experimental_option("prefs", prefs)
-    if not os.path.exists(DownloadPath):
-        os.makedirs(DownloadPath, exist_ok=True)
+    print_log(f"Download Path: {DownloadPath}")
 
     driver = webdriver.Chrome(service=Service(
         ChromeDriverManager().install()), options=options)
+    driver.set_page_load_timeout(INF)
+    print_log("Driver Started")
+
     driver.get("https://athena.itslearning.com/main.aspx?TextURL=CourseCards")
-    element = WebDriverWait(driver, INF).until(
-        EC.any_of(
-            EC.url_contains(
-                "athena.itslearning.com/main.aspx?TextURL=CourseCards"),
-            EC.url_contains("athena.itslearning.com/index.aspx")
-        )
-    )
+    print_log("Opened Athena")
 
     if not AutoLogin:
-        print_log("Please login manually")
+        print_log("Auto Login Disabled by Config")
         while not is_logged_in(driver):
             pass
         print_log("Login Successful")
     else:
-        print_log("Trying auto login")
+        print_log("Auto Login Enabled by Config, Logging in")
         try:
             element = WebDriverWait(driver, INF).until(
                 EC.presence_of_element_located(
@@ -173,6 +176,7 @@ if __name__ == "__main__":
             _to_login = driver.find_element(
                 By.CLASS_NAME, "itsl-native-login-button")
             _to_login.click()
+            print_log("Clicked Login Button")
             element = WebDriverWait(driver, INF).until(
                 EC.all_of(
                     EC.presence_of_element_located((By.ID, "username")),
@@ -185,8 +189,10 @@ if __name__ == "__main__":
             _Username.send_keys(Username)
             _Password = driver.find_element(By.ID, "password")
             _Password.send_keys(Password)
+            print_log("Filled in Username and Password")
             _login = driver.find_element(By.NAME, "_eventId_proceed")
             _login.click()
+            print_log("Clicked Login Submit Button")
             while not is_logged_in(driver):
                 if "Incorrect username or password." in driver.page_source:
                     raise Exception("Incorrect username or password.")
@@ -201,13 +207,19 @@ if __name__ == "__main__":
     print_log("Folder Opened")
 
     urldict = list_files(driver)
+    print_log("All Files URL Listed")
     pathdict = list_paths(urldict)
-
+    print_log("All Files Path Listed")
     downloadlist = list_downloads(driver, pathdict, urldict)
+    print_log("All Files Download List Generated")
 
     try:
         for item in downloadlist:
             download(driver, item[0], item[1])
-        print_log(f"All {len(downloadlist)} files downloaded")
+        folder = Path(DownloadPath)
+        size = sum(f.stat().st_size for f in folder.rglob('*') if f.is_file())
+        readable_size = humanize.naturalsize(size, binary=True)
+        print_log(
+            f"All {len(downloadlist)} files downloaded successfully, total size: {readable_size}.")
     except Exception as e:
         print_log(f"Download Failed: {e}")
