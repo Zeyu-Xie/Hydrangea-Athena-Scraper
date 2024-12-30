@@ -12,7 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
-INF = 2 ** 31 - 1
+INF = 2**31 - 1
 config_path = os.path.join(os.path.dirname(__file__), "config.yaml")
 
 
@@ -24,7 +24,8 @@ def read_config():
 config = read_config()
 FolderID = config["FolderID"]
 DownloadPath = os.path.join(
-    config["DownloadPath"], "Athena_"+datetime.now().strftime("%Y%m%d%H%M%S%f"))
+    config["DownloadPath"], "Athena_" + datetime.now().strftime("%Y%m%d%H%M%S%f")
+)
 AutoLogin = config["AutoLogin"]
 Username = config["Username"]
 Password = config["Password"]
@@ -52,10 +53,9 @@ def is_logged_in(driver):
 
 
 def set_download_path(driver, path):
-    driver.execute_cdp_cmd("Page.setDownloadBehavior", {
-        "behavior": "allow",
-        "downloadPath": path
-    })
+    driver.execute_cdp_cmd(
+        "Page.setDownloadBehavior", {"behavior": "allow", "downloadPath": path}
+    )
 
 
 def _list_files(driver):
@@ -89,7 +89,8 @@ def list_paths(files, _path=""):
     for filename in files:
         if isinstance(files[filename], dict):
             pathdict[filename] = list_paths(
-                files[filename], os.path.join(_path, filename))
+                files[filename], os.path.join(_path, filename)
+            )
         else:
             pathdict[filename] = os.path.join(_path, filename)
     return pathdict
@@ -102,16 +103,20 @@ def list_downloads(driver, pathdict, urldict, _bp="", _files=[]):
     else:
         for path in pathdict:
             new_bp = os.path.join(_bp, path)
-            list_downloads(
-                driver, pathdict[path], urldict[path], new_bp, _files)
+            list_downloads(driver, pathdict[path], urldict[path], new_bp, _files)
         return _files
 
 
 def download_button(driver):
     frame_id = "ctl00_ContentPlaceHolder_ExtensionIframe"
-    driver.switch_to.frame(frame_id)
-    id_list = ["ctl00_ctl00_MainFormContent_DownloadLinkForViewType",
-               "ctl00_ctl00_MainFormContent_ResourceContent_DownloadButton_DownloadLink"]
+    try:
+        driver.switch_to.frame(frame_id)
+    except:
+        return None
+    id_list = [
+        "ctl00_ctl00_MainFormContent_DownloadLinkForViewType",
+        "ctl00_ctl00_MainFormContent_ResourceContent_DownloadButton_DownloadLink",
+    ]
     for id in id_list:
         try:
             return driver.find_element(By.ID, id)
@@ -124,10 +129,10 @@ def download(driver, path, url):
     driver.get(url)
     print_log(f"Opened {url}")
 
-    set_download_path(driver, os.path.dirname(
-        os.path.join(DownloadPath, path)))
+    set_download_path(driver, os.path.dirname(os.path.join(DownloadPath, path)))
     print_log(
-        f"Set download directory to {os.path.dirname(os.path.join(DownloadPath, path))}")
+        f"Set download directory to {os.path.dirname(os.path.join(DownloadPath, path))}"
+    )
 
     db = download_button(driver)
     if db:
@@ -146,15 +151,16 @@ if __name__ == "__main__":
     prefs = {
         "download.prompt_for_download": False,
         "download.directory_upgrade": True,
-        "safebrowsing.enabled": True
+        "safebrowsing.enabled": True,
     }
     print_log("Chrome Options Set")
     options = Options()
     options.add_experimental_option("prefs", prefs)
     print_log(f"Download Path: {DownloadPath}")
 
-    driver = webdriver.Chrome(service=Service(
-        ChromeDriverManager().install()), options=options)
+    driver = webdriver.Chrome(
+        service=Service(ChromeDriverManager().install()), options=options
+    )
     driver.set_page_load_timeout(INF)
     print_log("Driver Started")
 
@@ -171,18 +177,17 @@ if __name__ == "__main__":
         try:
             element = WebDriverWait(driver, INF).until(
                 EC.presence_of_element_located(
-                    (By.CLASS_NAME, "itsl-native-login-button"))
+                    (By.CLASS_NAME, "itsl-native-login-button")
+                )
             )
-            _to_login = driver.find_element(
-                By.CLASS_NAME, "itsl-native-login-button")
+            _to_login = driver.find_element(By.CLASS_NAME, "itsl-native-login-button")
             _to_login.click()
             print_log("Clicked Login Button")
             element = WebDriverWait(driver, INF).until(
                 EC.all_of(
                     EC.presence_of_element_located((By.ID, "username")),
                     EC.presence_of_element_located((By.ID, "password")),
-                    EC.presence_of_element_located(
-                        (By.NAME, "_eventId_proceed"))
+                    EC.presence_of_element_located((By.NAME, "_eventId_proceed")),
                 )
             )
             _Username = driver.find_element(By.ID, "username")
@@ -202,8 +207,7 @@ if __name__ == "__main__":
             sys.exit(1)
         print_log("Login Successful")
 
-    driver.get(
-        f"https://athena.itslearning.com/Resources?FolderID={FolderID}")
+    driver.get(f"https://athena.itslearning.com/Resources?FolderID={FolderID}")
     print_log("Folder Opened")
 
     urldict = list_files(driver)
@@ -217,9 +221,10 @@ if __name__ == "__main__":
         for item in downloadlist:
             download(driver, item[0], item[1])
         folder = Path(DownloadPath)
-        size = sum(f.stat().st_size for f in folder.rglob('*') if f.is_file())
+        size = sum(f.stat().st_size for f in folder.rglob("*") if f.is_file())
         readable_size = humanize.naturalsize(size, binary=True)
         print_log(
-            f"All {len(downloadlist)} files downloaded successfully, total size: {readable_size}.")
+            f"All {len(downloadlist)} files downloaded successfully, total size: {readable_size}."
+        )
     except Exception as e:
         print_log(f"Download Failed: {e}")
