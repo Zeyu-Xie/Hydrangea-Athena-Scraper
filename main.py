@@ -48,6 +48,8 @@ def is_logged_in(driver):
     url = driver.current_url
     if "athena.itslearning.com/main.aspx?TextURL=CourseCards" in url:
         return True
+    elif "athena.itslearning.com/CourseCards" in url:
+        return True
     else:
         return False
 
@@ -226,5 +228,7 @@ if __name__ == "__main__":
         print_log(
             f"All {len(downloadlist)} files downloaded successfully, total size: {readable_size}."
         )
+        while True:
+            pass
     except Exception as e:
         print_log(f"Download Failed: {e}")
