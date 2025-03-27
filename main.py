@@ -12,6 +12,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
 
+from src.page import page_type
+
 INF = 2**31 - 1
 config_path = os.path.join(os.path.dirname(__file__), "config.yaml")
 
@@ -110,18 +112,19 @@ def list_downloads(driver, pathdict, urldict, _bp="", _files=[]):
 
 
 def download_button(driver):
-    frame_id = "ctl00_ContentPlaceHolder_ExtensionIframe"
-    try:
-        driver.switch_to.frame(frame_id)
-    except:
+    print(page_type(driver))
+    if page_type(driver) != "Download Page":
         return None
-    id_list = [
+    driver.switch_to.default_content()
+    frame_id = "ctl00_ContentPlaceHolder_ExtensionIframe"
+    button_id_list = [
         "ctl00_ctl00_MainFormContent_DownloadLinkForViewType",
         "ctl00_ctl00_MainFormContent_ResourceContent_DownloadButton_DownloadLink",
     ]
-    for id in id_list:
+    driver.switch_to.frame(frame_id)
+    for button_id in button_id_list:
         try:
-            return driver.find_element(By.ID, id)
+            return driver.find_element(By.ID, button_id)
         except:
             pass
     return None
