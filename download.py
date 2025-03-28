@@ -91,6 +91,36 @@ def _write_link(driver, path):
         f.write(link_content)
 
 
+# === Type 3: Group Registration Page ===
+
+
+def _write_group_registration_info(driver, path):
+
+    # Info Save Path
+    info_path = os.path.join(DownloadPath, path + ".txt")
+    info_dir = os.path.dirname(info_path)
+    os.makedirs(info_dir, exist_ok=True)
+    print_log(f"Save group registration info to {info_path}")
+
+    # Get Info
+    frame_id = "ctl00_ContentPlaceHolder_ExtensionIframe"
+    div_class = "ccl-categorybox-contentpanel"
+
+    text = ""
+    try:
+        driver.switch_to.frame(frame_id)
+        _div_list = driver.find_elements(By.CLASS_NAME, div_class)
+        for _div in _div_list:
+            text += _div.text + "\n\n"
+    except:
+        print_log("Failed to read group registration info")
+    driver.switch_to.default_content()
+
+    # Save Info
+    with open(info_path, "w") as f:
+        f.write(text)
+
+
 # === Overall Functions ===
 
 
@@ -112,6 +142,11 @@ def _route_page(driver, path, url):
             _write_link(driver, path)
         else:
             print_log("Link Page Ignored by Config")
+    elif current_page_type == "Group Registration Page":
+        if DownloadGroupRegistrationPage:
+            _write_group_registration_info(driver, path)
+        else:
+            print_log("Group Registration Info Ignored by Config")
     else:
         print_log(f"Page Type {current_page_type} not supported")
 

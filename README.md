@@ -30,7 +30,7 @@ A tool for downloading files from Athena.
    - Make sure [Node.js](https://nodejs.org) and [npm](https://www.npmjs.com) are installed.
    
    - Install ChromeDriver globally with:
-     ```bash
+     ```zsh
      npm install -g chromedriver@[version]
 
 **Note:** In version `1.1.0` an unstable shell script `chromedriver/installer.sh` is included, which can detect the installed version of Chrome and download the corresponding version of ChromeDriver. This script is not recommended for production use for potential bugs.
@@ -38,7 +38,7 @@ A tool for downloading files from Athena.
 ### Step 2: Install Python Dependencies
 
 - Run the following command from the project’s root directory to install necessary Python packages:
-  ```bash
+  ```zsh
   pip install -r requirements.txt
   ```
 
@@ -52,7 +52,7 @@ A tool for downloading files from Athena.
 ## Running the Scraper
 
 1. Run the Python script with:
-   ```bash
+   ```zsh
    python main.py
    ```
 2. Wait for the download process to complete.

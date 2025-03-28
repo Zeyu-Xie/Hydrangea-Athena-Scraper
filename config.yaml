@@ -16,3 +16,4 @@ FileLog: True
 
 # === Download Configuration ===
 DownloadLinkPage: True
+DownloadGroupRegistrationPage: True

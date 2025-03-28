@@ -36,6 +36,16 @@ def is_link_page(driver):
         return False
 
 
+def is_group_registration_page(driver):
+    driver.switch_to.default_content()
+    h1_xpath = "//h1[text()='Group registration']"
+    try:
+        if driver.find_element(By.XPATH, h1_xpath):
+            return True
+        return False
+    except:
+        return False
+
 def is_discussion_page(driver):
     driver.switch_to.default_content()
     span_xpath = "//span[text()='Discussion']"
@@ -46,12 +56,13 @@ def is_discussion_page(driver):
     except:
         return False
 
-
 def is_custom_page(driver):
     driver.switch_to.default_content()
     h1_xpath = "//h1[@class='prom-page-header-editable__title']"
     try:
         if driver.find_element(By.XPATH, h1_xpath):
+            t = driver.find_element(By.XPATH, h1_xpath)
+            print(t.text)
             return True
         return False
     except:
@@ -66,6 +77,8 @@ def page_type(driver):
         pt = "Download Page"
     elif is_link_page(driver):
         pt = "Link Page"
+    elif is_group_registration_page(driver):
+        pt = "Group Registration Page"
     elif is_discussion_page(driver):
         pt = "Discussion Page"
     elif is_custom_page(driver):
