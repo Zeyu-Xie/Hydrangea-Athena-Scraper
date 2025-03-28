@@ -61,13 +61,18 @@ def is_custom_page(driver):
 
 def page_type(driver):
 
+    pt = "Unrecognized Page"
+
     if is_download_page(driver):
-        return "Download Page"
+        pt = "Download Page"
     elif is_link_page(driver):
-        return "Link Page"
+        pt = "Link Page"
     elif is_discussion_page(driver):
-        return "Discussion Page"
+        pt = "Discussion Page"
     elif is_custom_page(driver):
-        return "Custom Page"
+        pt = "Custom Page"
     else:
-        return "Unrecognized Page"
+        pt = "Unrecognized Page"
+    
+    driver.switch_to.default_content()
+    return pt
