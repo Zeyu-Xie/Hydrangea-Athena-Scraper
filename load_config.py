@@ -21,3 +21,4 @@ Password = config["Password"]
 CommandLineLog = config["CommandLineLog"]
 FileLog = config["FileLog"]
 FileLogPath = os.path.join(DownloadPath, "log.txt")
+DownloadLinkPage = config["DownloadLinkPage"]

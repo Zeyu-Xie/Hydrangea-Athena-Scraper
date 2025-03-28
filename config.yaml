@@ -13,3 +13,6 @@ Password: "password"
 # === Log Configuration ===
 CommandLineLog: True
 FileLog: True
+
+# === Download Configuration ===
+DownloadLinkPage: True

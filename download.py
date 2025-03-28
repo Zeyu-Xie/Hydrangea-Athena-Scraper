@@ -108,7 +108,10 @@ def _route_page(driver, path, url):
     if current_page_type == "Download Page":
         _download(driver, path)
     elif current_page_type == "Link Page":
-        _write_link(driver, path)
+        if DownloadLinkPage:
+            _write_link(driver, path)
+        else:
+            print_log("Link Page Ignored by Config")
     else:
         print_log(f"Page Type {current_page_type} not supported")
 
