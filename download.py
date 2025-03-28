@@ -121,6 +121,34 @@ def _write_group_registration_info(driver, path):
         f.write(text)
 
 
+# === Type 5: Custom Page ===
+
+
+def _download_custom_page(driver, path):
+
+    # Page Save Path
+    page_path = os.path.join(DownloadPath, path + ".html")
+
+    page_dir = os.path.dirname(page_path)
+    os.makedirs(page_dir, exist_ok=True)
+    print_log(f"Save custom page to {page_path}")
+
+    # Get Page
+    frame_id = "ctl00_ContentPlaceHolder_ExtensionIframe"
+
+    html = ""
+    try:
+        driver.switch_to.frame(frame_id)
+        html = driver.page_source
+    except:
+        print_log("Failed to fetch custom page")
+    driver.switch_to.default_content()
+
+    # Save custom page source
+    with open(page_path, "w") as f:
+        f.write(html)
+
+
 # === Overall Functions ===
 
 
@@ -147,6 +175,11 @@ def _route_page(driver, path, url):
             _write_group_registration_info(driver, path)
         else:
             print_log("Group Registration Info Ignored by Config")
+    elif current_page_type == "Custom Page":
+        if DownloadCustomPage:
+            _download_custom_page(driver, path)
+        else:
+            print_log("Custom Page Ignored by Config")
     else:
         print_log(f"Page Type {current_page_type} not supported")
 

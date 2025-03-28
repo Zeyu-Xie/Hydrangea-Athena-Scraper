@@ -23,3 +23,4 @@ FileLog = config["FileLog"]
 FileLogPath = os.path.join(DownloadPath, "log.txt")
 DownloadLinkPage = config["DownloadLinkPage"]
 DownloadGroupRegistrationPage = config["DownloadGroupRegistrationPage"]
+DownloadCustomPage = config["DownloadCustomPage"]
