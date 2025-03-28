@@ -10,6 +10,35 @@ from src.page import page_type
 
 from load_config import *
 
+# === Download components ===
+
+
+class DownloadStatus:
+
+    def __init__(self):
+        self.download_dir_set = set([])
+
+    def add_dir(self, download_dir):
+        self.download_dir_set.add(download_dir)
+
+    def add_file(self, download_path):
+        download_dir = os.path.dirname(download_path)
+        self.download_dir_set.add(download_dir)
+
+    def queueLen(self):
+        ql = 0
+        for download_dir in self.download_dir_set:
+            for filename in os.listdir(download_dir):
+                if os.path.isdir(filename):
+                    continue
+                else:
+                    if filename.endswith(".crdownload"):
+                        ql += 1
+        return ql
+
+
+download_status = DownloadStatus()
+
 
 def _set_download_path(driver, path):
     driver.execute_cdp_cmd(
@@ -53,6 +82,7 @@ def _download(driver, path):
     # Download
     if db:
         db.click()
+        download_status.add_dir(download_path)
         print_log(f"Downloaded {path}")
     else:
         print_log(f"No download button found for {path}")
@@ -188,24 +218,22 @@ def download(driver, urldict, pathdict, downloadlist):
     try:
         # Route Pages
         for item in downloadlist:
-            print("")
+            print_log("")
             _route_page(driver, item[0], item[1])
 
         # Summary
+        while download_status.queueLen() > 0:
+            pass
         folder = Path(DownloadPath)
         size = sum(f.stat().st_size for f in folder.rglob("*") if f.is_file())
         readable_size = humanize.naturalsize(size, binary=True)
-        sleep(3)
-        print("")
+        print_log("")
         print_log(
             f"All {len(downloadlist)} files downloaded successfully, total size: {readable_size}."
         )
-
-        # Wait for user to close
-        print_log("Press any key to exit.")
-        input()
         driver.quit()
         sys.exit(0)
+
     except Exception as e:
         print_log(f"Download Failed: {e}")
         driver.quit()
