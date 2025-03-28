@@ -4,8 +4,6 @@ from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import os
 
-from src.page import page_type
-
 from list_files import list_files, list_paths, list_downloads
 from load_config import *
 from login import login

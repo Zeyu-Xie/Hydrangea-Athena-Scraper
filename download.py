@@ -134,7 +134,7 @@ def download(driver, urldict, pathdict, downloadlist):
         )
 
         # Wait for user to close
-        print_log("Print any key to exit.")
+        print_log("Press any key to exit.")
         input()
         driver.quit()
         sys.exit(0)
