@@ -1,6 +1,7 @@
 import os
 from selenium.webdriver.common.by import By
 
+
 def _list_files(driver):
     filedict = {}
     list = driver.find_elements(By.CLASS_NAME, "prom-link--primary")
@@ -14,7 +15,6 @@ def _list_files(driver):
 def list_files(driver, _visited=None):
     if _visited is None:
         _visited = set()
-    # print_log(f"Listing files from {driver.current_url}")
     filedict = _list_files(driver)
     keys = list(filedict.keys())
     for key in keys:

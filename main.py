@@ -15,41 +15,14 @@ from webdriver_manager.chrome import ChromeDriverManager
 from src.page import page_type
 
 from list_files import list_files, list_paths, list_downloads
+from load_config import *
+from print_log import print_log
 
 INF = 2**31 - 1
-config_path = os.path.join(os.path.dirname(__file__), "config.yaml")
-
-
-def read_config():
-    with open(config_path, "r") as f:
-        return yaml.load(f, Loader=yaml.FullLoader)
-
-
-config = read_config()
-FolderID = config["FolderID"]
-DownloadPath = os.path.join(
-    config["DownloadPath"], "Athena_" + datetime.now().strftime("%Y%m%d%H%M%S%f")
-)
-AutoLogin = config["AutoLogin"]
-Username = config["Username"]
-Password = config["Password"]
-CommandLineLog = config["CommandLineLog"]
-FileLog = config["FileLog"]
-FileLogPath = os.path.join(DownloadPath, "log.txt")
 
 
 def print_new_line():
     print("\n")
-
-
-def print_log(msg):
-    global CommandLineLog, FileLog, FileLogPath
-    log = f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S:%f')[:-3]}] {msg}"
-    if CommandLineLog:
-        print(log)
-    if FileLog:
-        with open(FileLogPath, "a") as f:
-            f.write(log + "\n")
 
 
 def is_logged_in(driver):
