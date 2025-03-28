@@ -1,8 +1,10 @@
-# Hydrangea-Athena-Scraper
+![GitHub contributors](https://img.shields.io/github/contributors/Zeyu-Xie/Hydrangea-Athena-Scraper)
+![GitHub Release](https://img.shields.io/github/v/release/Zeyu-Xie/Hydrangea-Athena-Scraper)
+![License](https://img.shields.io/github/license/Zeyu-Xie/Hydrangea-Athena-Scraper) 
+
+# Hydrangea Athena Scraper
 
 A tool for downloading files from Athena.
-
-**Supported OS:** MacOS only (for now)
 
 ---
 
