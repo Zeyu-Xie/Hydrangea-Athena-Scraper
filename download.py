@@ -10,13 +10,14 @@ from src.page import page_type
 
 from load_config import *
 
-# === Type 1: Download Page ===
-
 
 def _set_download_path(driver, path):
     driver.execute_cdp_cmd(
         "Page.setDownloadBehavior", {"behavior": "allow", "downloadPath": path}
     )
+
+
+# === Type 1: Download Page ===
 
 
 def _download_button(driver):
@@ -57,6 +58,39 @@ def _download(driver, path):
         print_log(f"No download button found for {path}")
 
 
+# === Type 2: Link Page ===
+
+
+def _write_link(driver, path):
+
+    # Link Save Path
+    link_path = os.path.join(DownloadPath, path + ".txt")
+    link_dir = os.path.dirname(link_path)
+    os.makedirs(link_dir, exist_ok=True)
+    print_log(f"Save Link to {link_path}")
+
+    # Get Link
+    frame_id = "ctl00_ContentPlaceHolder_ExtensionIframe"
+    div_id = "embedPreview"
+
+    link_content = ""
+    try:
+        driver.switch_to.frame(frame_id)
+        sub_frame = driver.find_element(By.TAG_NAME, "iframe")
+        driver.switch_to.frame(sub_frame)
+        _div = driver.find_element(By.ID, div_id)
+        _a = _div.find_element(By.TAG_NAME, "a")
+        link_content = _a.get_attribute("href")
+        print_log(f"Detected link: {link_content}")
+    except:
+        print_log("Failed to locate the link")
+    driver.switch_to.default_content()
+
+    # Save Link
+    with open(link_path, "w") as f:
+        f.write(link_content)
+
+
 # === Overall Functions ===
 
 
@@ -73,6 +107,8 @@ def _route_page(driver, path, url):
     # Route Page
     if current_page_type == "Download Page":
         _download(driver, path)
+    elif current_page_type == "Link Page":
+        _write_link(driver, path)
     else:
         print_log(f"Page Type {current_page_type} not supported")
 

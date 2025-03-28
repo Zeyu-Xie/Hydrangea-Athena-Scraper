@@ -29,10 +29,9 @@ def is_link_page(driver):
         driver.switch_to.frame(frame_id)
         sub_frame = driver.find_element(By.TAG_NAME, "iframe")
         driver.switch_to.frame(sub_frame)
-        if driver.find_element(By.ID, div_id):
-            if driver.find_element(By.TAG_NAME, "a"):
-                return True
-        return False
+        _div = driver.find_element(By.ID, div_id)
+        _a = _div.find_element(By.TAG_NAME, "a")
+        return True
     except:
         return False
 
@@ -73,6 +72,6 @@ def page_type(driver):
         pt = "Custom Page"
     else:
         pt = "Unrecognized Page"
-    
+
     driver.switch_to.default_content()
     return pt
