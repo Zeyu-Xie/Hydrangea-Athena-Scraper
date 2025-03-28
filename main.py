@@ -14,6 +14,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from src.page import page_type
 
+from list_files import list_files, list_paths, list_downloads
+
 INF = 2**31 - 1
 config_path = os.path.join(os.path.dirname(__file__), "config.yaml")
 
@@ -34,6 +36,10 @@ Password = config["Password"]
 CommandLineLog = config["CommandLineLog"]
 FileLog = config["FileLog"]
 FileLogPath = os.path.join(DownloadPath, "log.txt")
+
+
+def print_new_line():
+    print("\n")
 
 
 def print_log(msg):
@@ -60,55 +66,6 @@ def set_download_path(driver, path):
     driver.execute_cdp_cmd(
         "Page.setDownloadBehavior", {"behavior": "allow", "downloadPath": path}
     )
-
-
-def _list_files(driver):
-    filedict = {}
-    list = driver.find_elements(By.CLASS_NAME, "prom-link--primary")
-    for item in list:
-        filename = item.text
-        filelink = item.get_attribute("href")
-        filedict[filename] = filelink
-    return filedict
-
-
-def list_files(driver, _visited=None):
-    if _visited is None:
-        _visited = set()
-    print_log(f"Listing files from {driver.current_url}")
-    filedict = _list_files(driver)
-    keys = list(filedict.keys())
-    for key in keys:
-        url = filedict[key]
-        if "FolderID" in url and url not in _visited:
-            _visited.add(url)
-            driver.get(url)
-            filedict[key] = list_files(driver, _visited)
-            driver.back()
-    return filedict
-
-
-def list_paths(files, _path=""):
-    pathdict = {}
-    for filename in files:
-        if isinstance(files[filename], dict):
-            pathdict[filename] = list_paths(
-                files[filename], os.path.join(_path, filename)
-            )
-        else:
-            pathdict[filename] = os.path.join(_path, filename)
-    return pathdict
-
-
-def list_downloads(driver, pathdict, urldict, _bp="", _files=[]):
-    if type(pathdict) == str:
-        _files.append((_bp, urldict))
-        return _files
-    else:
-        for path in pathdict:
-            new_bp = os.path.join(_bp, path)
-            list_downloads(driver, pathdict[path], urldict[path], new_bp, _files)
-        return _files
 
 
 def download_button(driver):
