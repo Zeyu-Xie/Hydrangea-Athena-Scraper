@@ -16,23 +16,10 @@ from src.page import page_type
 
 from list_files import list_files, list_paths, list_downloads
 from load_config import *
+from login import login
 from print_log import print_log
 
 INF = 2**31 - 1
-
-
-def print_new_line():
-    print("\n")
-
-
-def is_logged_in(driver):
-    url = driver.current_url
-    if "athena.itslearning.com/main.aspx?TextURL=CourseCards" in url:
-        return True
-    elif "athena.itslearning.com/CourseCards" in url:
-        return True
-    else:
-        return False
 
 
 def set_download_path(driver, path):
@@ -79,10 +66,15 @@ def download(driver, path, url):
 
 if __name__ == "__main__":
 
-    print("Hydrangea Athena Downloader © 2024 by Acan. All rights reserved.")
+    # Print Header
+    print("Hydrangea Athena Downloader © 2025 by Zeyu Xie. All rights reserved.")
+    
+    # Create Download Path
     if not os.path.exists(DownloadPath):
         os.makedirs(DownloadPath, exist_ok=True)
-        print_log("Download Path Created")
+        print_log(f"Download Path: {DownloadPath}")
+
+    # Set Chrome Options
     prefs = {
         "download.prompt_for_download": False,
         "download.directory_upgrade": True,
@@ -91,56 +83,20 @@ if __name__ == "__main__":
     print_log("Chrome Options Set")
     options = Options()
     options.add_experimental_option("prefs", prefs)
-    print_log(f"Download Path: {DownloadPath}")
-
+    
+    # Start Driver
     driver = webdriver.Chrome(
         service=Service(ChromeDriverManager().install()), options=options
     )
     driver.set_page_load_timeout(INF)
     print_log("Driver Started")
 
+    # Open Athena
     driver.get("https://athena.itslearning.com/main.aspx?TextURL=CourseCards")
     print_log("Opened Athena")
 
-    if not AutoLogin:
-        print_log("Auto Login Disabled by Config")
-        while not is_logged_in(driver):
-            pass
-        print_log("Login Successful")
-    else:
-        print_log("Auto Login Enabled by Config, Logging in")
-        try:
-            element = WebDriverWait(driver, INF).until(
-                EC.presence_of_element_located(
-                    (By.CLASS_NAME, "itsl-native-login-button")
-                )
-            )
-            _to_login = driver.find_element(By.CLASS_NAME, "itsl-native-login-button")
-            _to_login.click()
-            print_log("Clicked Login Button")
-            element = WebDriverWait(driver, INF).until(
-                EC.all_of(
-                    EC.presence_of_element_located((By.ID, "username")),
-                    EC.presence_of_element_located((By.ID, "password")),
-                    EC.presence_of_element_located((By.NAME, "_eventId_proceed")),
-                )
-            )
-            _Username = driver.find_element(By.ID, "username")
-            _Username.send_keys(Username)
-            _Password = driver.find_element(By.ID, "password")
-            _Password.send_keys(Password)
-            print_log("Filled in Username and Password")
-            _login = driver.find_element(By.NAME, "_eventId_proceed")
-            _login.click()
-            print_log("Clicked Login Submit Button")
-            while not is_logged_in(driver):
-                if "Incorrect username or password." in driver.page_source:
-                    raise Exception("Incorrect username or password.")
-        except Exception as e:
-            print_log(f"Login Failed: {e}")
-            driver.quit()
-            sys.exit(1)
-        print_log("Login Successful")
+    # Login
+    login(driver)
 
     driver.get(f"https://athena.itslearning.com/Resources?FolderID={FolderID}")
     print_log("Folder Opened")
