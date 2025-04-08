@@ -73,6 +73,8 @@ def _download(driver, path):
 
     # Set Download Path
     download_path = os.path.dirname(os.path.join(DownloadPath, path))
+    if not os.path.exists(download_path):
+        os.makedirs(download_path)
     _set_download_path(driver, download_path)
     print_log(f"Set download directory to {download_path}")
 
